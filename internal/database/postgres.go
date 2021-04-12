@@ -29,21 +29,29 @@ func (d *PostgresDB) GetOrganization(id int) (model.Organization, error) {
 	queryRes := d.db.First(&org, id)
 	return org, queryRes.Error
 }
-func (d *PostgresDB) GetAllOrganizations() ([]model.Organization, error) {
+func (d *PostgresDB) GetAllOrganizations() (model.OrganizationList, error) {
 	var orgs []model.Organization
 	queryRes := d.db.Find(&orgs)
 	return orgs, queryRes.Error
 }
-func (d *PostgresDB) CreateOrganization(organization model.Organization) error {
+func (d *PostgresDB) CreateOrganization(organization model.Organization) (model.Organization, error) {
 	queryRes := d.db.Create(&organization)
-	return queryRes.Error
+	return organization, queryRes.Error
 }
 func (d *PostgresDB) UpdateOrganization(organization model.Organization) error {
-	queryRes := d.db.Model(&organization).Updates(organization)
+	queryRes := d.db.First(&organization)
+	if queryRes.Error != nil {
+		return queryRes.Error
+	}
+	queryRes = d.db.Model(&organization).Updates(organization)
 	return queryRes.Error
 }
 func (d *PostgresDB) DeleteOrganization(id int) error {
 	var organization model.Organization
-	queryRes := d.db.Delete(&organization, id)
+	queryRes := d.db.First(&organization, id)
+	if queryRes.Error != nil {
+		return queryRes.Error
+	}
+	queryRes = d.db.Delete(&organization, id)
 	return queryRes.Error
 }

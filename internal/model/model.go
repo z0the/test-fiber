@@ -10,3 +10,4 @@ type Organization struct {
 	AnnualProfit      int       `json:"annual_profit"`
 	NumberOfEmployees int       `json:"number_of_employees"`
 }
+type OrganizationList []Organization
